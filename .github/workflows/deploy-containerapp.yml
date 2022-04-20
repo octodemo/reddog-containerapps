@@ -42,7 +42,26 @@ on:
     #     required: true
 
 jobs:
-  build:
+
+  set-env:
+    name: Set Environment Variables
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.main.outputs.version }}
+      created: ${{ steps.main.outputs.created }}
+      image: ${{ steps.main.outputs.image }}
+      repository: ${{ steps.main.outputs.repository }}  
+    steps:
+      - id: main
+        run: |
+          echo ::set-output name=version::$(echo ${GITHUB_SHA} | cut -c1-7)
+          echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          echo ::set-output name=image::reddog-traefik
+          echo ::set-output name=repository::ghcr.io/octodemo/reddog-containerapps
+
+  package-service:
+    name: Package Service
+    needs: set-env
     runs-on: ubuntu-latest
 
     steps:
@@ -59,6 +78,7 @@ jobs:
           username: ${{ github.actor }}
           # password: ${{ secrets.CR_PAT }}git pu
           password: ${{ secrets.GITHUB_TOKEN }}
+      
 
 
   # validate_parameters:
