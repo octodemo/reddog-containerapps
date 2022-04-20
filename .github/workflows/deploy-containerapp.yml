@@ -104,17 +104,6 @@ jobs:
           with:
             creds: ${{ secrets.SENNAPARSA_AZURE_CREDENTIALS }}
 
-
-        # - name: Deploy to containerapp
-        #   uses: azure/CLI@v1
-        #   with:
-        #     inlineScript: |
-        #       echo "Installing containerapp extension"
-        #       az config set extension.use_dynamic_install=yes_without_prompt
-        #       echo "Starting Deploying"
-        #       az containerapp registry set -n reddog-container-app -g reddog --server sennaparsa.azurecr.io --username  ${{ secrets.REDDOGCONTAINERAPP_REGISTRY_USERNAME }} --password ${{ secrets.REDDOGCONTAINERAPP_REGISTRY_PASSWORD }}
-        #       az containerapp update -n reddog-container-app -g reddog --image sennaparsa.azurecr.io/reddog-container-app:${{ github.sha }}
- 
         - name: Add Container App Extension to Azue CLI
           run: |
             echo "Installing containerapp extension"
@@ -124,17 +113,17 @@ jobs:
             echo "Starting Deploying"
           shell: bash
 
-        # - name: Create Container App Environment
-        #   env:
-        #     LOCATION: eastus2 # hardcoded for now but can be passed inas secret or discovered, not required by default, but useful as resource group is location aware
-        #   run: |
-        #     az containerapp env create \
-        #       --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
-        #       --name "${{ github.event.inputs.environment_name }}" \
-        #       --location "$LOCATION" \
-        #       --tags ref="${{ github.event.inputs.deployment_github_ref }}" \
-        #           repository="${{ github.repository }}"
-        #   shell: bash
+        - name: Create Container App Environment
+          env:
+            LOCATION: eastus2 # hardcoded for now but can be passed inas secret or discovered, not required by default, but useful as resource group is location aware
+          run: |
+            az containerapp env create \
+              --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
+              --name "${{ github.event.inputs.environment_name }}" \
+              --location "$LOCATION" \
+              --tags ref="${{ needs.set-env.outputs.version }}" \
+                  repository="${{ github.repository }}"
+          shell: bash
  
         # - name: Create Container App
         #   id: deploy_container_app
