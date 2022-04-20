@@ -102,6 +102,7 @@ jobs:
           container_registry: ${{ github.event.inputs.container_registry }}
           container_image: ${{ needs.set-env.outputs.image }}
           container_version: ${{ needs.set-env.outputs.version }}
+          container_full_url: ${{ needs.set-env.outputs.container_full_url }}
         with:
           script: |
             const registry = process.env.container_registry
