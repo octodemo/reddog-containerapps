@@ -106,12 +106,11 @@ jobs:
   deploy:
       runs-on: ubuntu-latest
       needs: package-service
-
+             
       steps:
         - name: Checkout to the branch
           uses: actions/checkout@v2
-              
-      steps:
+
         - name: Azure Login
           uses: azure/login@v1
           with:
