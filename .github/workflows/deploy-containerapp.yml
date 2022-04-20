@@ -52,6 +52,7 @@ jobs:
       created: ${{ steps.main.outputs.created }}
       image: ${{ steps.main.outputs.image }}
       repository: ${{ steps.main.outputs.repository }}  
+      container_image_url: ${{ steps.main.outputs.container_image_url }}
     steps:
       - id: main
         run: |
@@ -59,6 +60,7 @@ jobs:
           echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
           echo ::set-output name=image::reddog-traefik
           echo ::set-output name=repository::ghcr.io/octodemo/reddog-containerapps
+          echo ::set-output name=container_image_url::${repository}/${image}:${version}
 
   package-service:
     name: Package Service
@@ -132,7 +134,7 @@ jobs:
               --name "${{ needs.validate_parameters.outputs.application_name }}" \
               --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
               --environment "${{ github.event.inputs.environment_name }}" \
-              --image ${{ needs.set-env.outputs.image }} \
+              --image ${{ needs.set-env.outputs.container_image_url }} \
               --registry-server "${{ github.event.inputs.container_registry }}" \
               --registry-username "${{ github.actor }}" \
               --registry-password "${{ secrets.GITHUB_TOKEN }}" \
@@ -144,6 +146,8 @@ jobs:
               --tags ref="${{ needs.set-env.outputs.version }}" \
                   repository="${{ github.repository }}"
           shell: bash
+
+          # core.setOutput('container_full_url', `${registry}/${image}:${version}`);
   
  
   # validate_parameters:
