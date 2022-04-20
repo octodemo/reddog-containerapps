@@ -1,43 +1,46 @@
 name: Deploy Environment -- Azure Container App
 
 on:
-  push:
-    branches:
-      - 'main'
-      - 'sp-deploy-action'
+  # push:
+  #   branches:
+  #     - 'main'
+  #     - 'sp-deploy-action'
     
   workflow_dispatch:
-    # inputs:
-    #   container_registry:
-    #     description: The registry where the container resides.
-    #     required: false
-    #     default: ghcr.io
+    inputs:
+      container_registry:
+        description: The registry where the container resides.
+        required: false
+        default: ghcr.io
 
-    #   app_container_image:
-    #     description: The name of the container image.
-    #     required: true
+      app_container_image:
+        description: The name of the container image.
+        required: true
+        default: reddog-traefik
 
-    #   app_container_version:
-    #     description: The version of the container image.
-    #     required: true
+      # app_container_version:
+      #   description: The version of the container image.
+      #   required: true
 
-    #   deployment_github_ref:
-    #     description: Repository reference for the deployment to be attached to.
-    #     required: true
+      deployment_github_ref:
+        description: Repository reference for the deployment to be attached to.
+        required: true
 
-    #   # No longer required
-    #   app_type:
-    #     description: Azure application type.
-    #     required: true
+      # No longer required
+      # app_type:
+      #   description: Azure application type.
+      #   required: true
 
-    #   # No longer required
-    #   app_name:
-    #     description: The name of the application.
-    #     required: true
+      # No longer required
+      app_name:
+        description: The name of the application.
+        required: true
+        default: reddog-octodemo
 
-    #   environment_name:
-    #     description: The name of the environment to be deployed
-    #     required: true
+      environment_name:
+        description: The name of the environment to be deployed
+        required: true
+        default: reddog-octodemo
 
 jobs:
 
@@ -74,7 +77,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          # password: ${{ secrets.CR_PAT }}git pu
+          # password: ${{ secrets.CR_PAT }}
           password: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Build and push
@@ -112,9 +115,47 @@ jobs:
         #       az containerapp registry set -n reddog-container-app -g reddog --server sennaparsa.azurecr.io --username  ${{ secrets.REDDOGCONTAINERAPP_REGISTRY_USERNAME }} --password ${{ secrets.REDDOGCONTAINERAPP_REGISTRY_PASSWORD }}
         #       az containerapp update -n reddog-container-app -g reddog --image sennaparsa.azurecr.io/reddog-container-app:${{ github.sha }}
  
+        - name: Add Container App Extension to Azue CLI
+          run: |
+            echo "Installing containerapp extension"
+            az extension add --name containerapp
+            # https://github.com/microsoft/azure-container-apps/issues/109
+            az provider register --namespace Microsoft.App
+            echo "Starting Deploying"
+          shell: bash
+
+        # - name: Create Container App Environment
+        #   env:
+        #     LOCATION: eastus2 # hardcoded for now but can be passed inas secret or discovered, not required by default, but useful as resource group is location aware
+        #   run: |
+        #     az containerapp env create \
+        #       --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
+        #       --name "${{ github.event.inputs.environment_name }}" \
+        #       --location "$LOCATION" \
+        #       --tags ref="${{ github.event.inputs.deployment_github_ref }}" \
+        #           repository="${{ github.repository }}"
+        #   shell: bash
  
- 
- 
+        # - name: Create Container App
+        #   id: deploy_container_app
+        #   run: |
+        #     az containerapp create \
+        #       --name "${{ needs.validate_parameters.outputs.application_name }}" \
+        #       --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
+        #       --environment "${{ github.event.inputs.environment_name }}" \
+        #       --image ${{ needs.validate_parameters.outputs.validated_container_full_url }} \
+        #       --registry-server "${{ needs.validate_parameters.outputs.validated_container_registry_url }}" \
+        #       --registry-username "${{ needs.validate_parameters.outputs.validated_container_registry_username }}" \
+        #       --registry-password "${{ secrets.GITHUB_TOKEN }}" \
+        #       --cpu 0.25 \
+        #       --memory 0.5Gi \
+        #       --target-port 8080 \
+        #       --ingress 'external' \
+        #       --query properties.configuration.ingress.fqdn \
+        #       --tags ref="${{ github.event.inputs.deployment_github_ref }}" \
+        #           repository="${{ github.repository }}"
+        #   shell: bash
+  
  
   # validate_parameters:
   #   name: Validate deployment parameters
