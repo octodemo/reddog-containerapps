@@ -130,11 +130,13 @@ jobs:
         - name: Create Container App
           id: deploy_container_app
           run: |
+            echo "creating contaienr app .."
+            echo "${{ needs.set-env.outputs.repository }}/${{ needs.set-env.outputs.image }}:${{ needs.set-env.outputs.version }}"
             az containerapp create \
-              --name "${{ needs.validate_parameters.outputs.application_name }}" \
+              --name "${{ github.event.inputs.app_name }}" \
               --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
               --environment "${{ github.event.inputs.environment_name }}" \
-              --image ${{ needs.set-env.outputs.container_image_url }} \
+              --image ${{ needs.set-env.outputs.repository }}/${{ needs.set-env.outputs.image }}:${{ needs.set-env.outputs.version }} \
               --registry-server "${{ github.event.inputs.container_registry }}" \
               --registry-username "${{ github.actor }}" \
               --registry-password "${{ secrets.GITHUB_TOKEN }}" \
