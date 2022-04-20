@@ -3,7 +3,7 @@ name: Deploy Environment -- Azure Container App
 on:
   push:
     branches: 
-      [ sp-deploy-test ]
+      [ sp-deploy-action ]
     paths:
     - '.github/workflows/'
     
