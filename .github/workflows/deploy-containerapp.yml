@@ -22,9 +22,9 @@ on:
       #   description: The version of the container image.
       #   required: true
 
-      deployment_github_ref:
-        description: Repository reference for the deployment to be attached to.
-        required: true
+      # deployment_github_ref:
+      #   description: Repository reference for the deployment to be attached to.
+      #   required: true
 
       # No longer required
       # app_type:
