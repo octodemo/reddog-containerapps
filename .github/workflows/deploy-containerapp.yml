@@ -164,12 +164,12 @@ jobs:
 
         - name: Deploy infra and reddog apps
           id: deploy_infra
-          context: .
           run: |
+            ls ../../deploy
             az deployment group create \
               --name "${{ github.event.inputs.app_name }}" \
               --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
-              --template-file deploy/bicep/main.bicep
+              --template-file ../../deploy/bicep/main.bicep
           shell: bash
 
 # az deployment group create -n reddog -g reddog -f ./deploy/bicep/main.bicep
