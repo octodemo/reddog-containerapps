@@ -96,6 +96,23 @@ jobs:
             org.opencontainers.image.created=${{ needs.set-env.outputs.created }}
             org.opencontainers.image.revision=${{ needs.set-env.outputs.version }}
 
+      - name: Update Output
+        uses: actions/github-script@v6
+        env:
+          container_registry: ${{ github.event.inputs.container_registry }}
+          container_image: ${{ needs.set-env.outputs.image }}
+          container_version: ${{ needs.set-env.outputs.version }}
+        with:
+          script: |
+            const registry = process.env.container_registry
+              , image = process.env.container_image
+              , version = process.env.container_version
+              ;
+            core.setOutput('container_registry_url', registry);
+            core.setOutput('container_full_url', `${registry}/${image}:${version}`);
+
+            
+
   deploy:
       runs-on: ubuntu-latest
       needs: package-service
@@ -130,13 +147,13 @@ jobs:
         - name: Create Container App
           id: deploy_container_app
           run: |
-            echo "creating contaienr app .."
-            echo "${{ needs.set-env.outputs.repository }}/${{ needs.set-env.outputs.image }}:${{ needs.set-env.outputs.version }}"
+            echo "creating container app .."
+            echo "`${{ needs.set-env.outputs.repository }}/${{ needs.set-env.outputs.image }}:${{ needs.set-env.outputs.version }}`"
             az containerapp create \
               --name "${{ github.event.inputs.app_name }}" \
               --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
               --environment "${{ github.event.inputs.environment_name }}" \
-              --image ${{ needs.set-env.outputs.repository }}/${{ needs.set-env.outputs.image }}:${{ needs.set-env.outputs.version }} \
+              --image ghcr.io/octodemo/reddog-containerapps/reddog-traefik:${{ github.sha }} \
               --registry-server "${{ github.event.inputs.container_registry }}" \
               --registry-username "${{ github.actor }}" \
               --registry-password "${{ secrets.GITHUB_TOKEN }}" \
@@ -149,7 +166,7 @@ jobs:
                   repository="${{ github.repository }}"
           shell: bash
 
-          # core.setOutput('container_full_url', `${registry}/${image}:${version}`);
+        
   
  
   # validate_parameters:
