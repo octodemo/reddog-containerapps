@@ -99,17 +99,17 @@ jobs:
       - name: Update Output
         uses: actions/github-script@v6
         env:
-          container_registry: ${{ github.event.inputs.container_registry }}
           container_image: ${{ needs.set-env.outputs.image }}
+          container_repository: ${{ needs.set-env.outputs.repository }}
           container_version: ${{ needs.set-env.outputs.version }}
           container_full_url: ${{ needs.set-env.outputs.container_full_url }}
         with:
           script: |
-            const registry = process.env.container_registry
+            const repository = process.env.container_repository
               , image = process.env.container_image
               , version = process.env.container_version
               ;
-            core.setOutput('container_full_url', `${registry}/${image}:${version}`);
+            core.setOutput('container_full_url', `${repository}/${image}:${version}`);
       - name: Echo output
         run: echo "${{ needs.set-env.outputs.container_full_url }}"
             
