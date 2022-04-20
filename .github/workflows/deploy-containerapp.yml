@@ -52,7 +52,7 @@ jobs:
       created: ${{ steps.main.outputs.created }}
       image: ${{ steps.main.outputs.image }}
       repository: ${{ steps.main.outputs.repository }}  
-      container_image_url: ${{ steps.main.outputs.container_image_url }}
+      container_full_url: ${{ steps.main.outputs.container_full_url }}
     steps:
       - id: main
         run: |
@@ -60,7 +60,7 @@ jobs:
           echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
           echo ::set-output name=image::reddog-traefik
           echo ::set-output name=repository::ghcr.io/octodemo/reddog-containerapps
-          echo ::set-output name=container_image_url::${repository}/${image}:${version}
+          echo ::set-output name=container_full_url::${repository}/${image}:${version}
 
   package-service:
     name: Package Service
@@ -108,9 +108,9 @@ jobs:
               , image = process.env.container_image
               , version = process.env.container_version
               ;
-            core.setOutput('container_registry_url', registry);
             core.setOutput('container_full_url', `${registry}/${image}:${version}`);
-
+      - name: Echo output
+        run: echo "${{ needs.set-env.outputs.container_full_url }}"
             
 
   deploy:
@@ -147,8 +147,6 @@ jobs:
         - name: Create Container App
           id: deploy_container_app
           run: |
-            echo "creating container app .."
-            echo "`${{ needs.set-env.outputs.repository }}/${{ needs.set-env.outputs.image }}:${{ needs.set-env.outputs.version }}`"
             az containerapp create \
               --name "${{ github.event.inputs.app_name }}" \
               --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
