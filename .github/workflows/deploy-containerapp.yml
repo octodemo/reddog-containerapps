@@ -2,37 +2,37 @@ name: Deploy Environment -- Azure Container App
 
 on:
   workflow_dispatch:
-    inputs:
-      container_registry:
-        description: The registry where the container resides.
-        required: false
-        default: ghcr.io
+    # inputs:
+    #   container_registry:
+    #     description: The registry where the container resides.
+    #     required: false
+    #     default: ghcr.io
 
-      app_container_image:
-        description: The name of the container image.
-        required: true
+    #   app_container_image:
+    #     description: The name of the container image.
+    #     required: true
 
-      app_container_version:
-        description: The version of the container image.
-        required: true
+    #   app_container_version:
+    #     description: The version of the container image.
+    #     required: true
 
-      deployment_github_ref:
-        description: Repository reference for the deployment to be attached to.
-        required: true
+    #   deployment_github_ref:
+    #     description: Repository reference for the deployment to be attached to.
+    #     required: true
 
-      # No longer required
-      app_type:
-        description: Azure application type.
-        required: true
+    #   # No longer required
+    #   app_type:
+    #     description: Azure application type.
+    #     required: true
 
-      # No longer required
-      app_name:
-        description: The name of the application.
-        required: true
+    #   # No longer required
+    #   app_name:
+    #     description: The name of the application.
+    #     required: true
 
-      environment_name:
-        description: The name of the environment to be deployed
-        required: true
+    #   environment_name:
+    #     description: The name of the environment to be deployed
+    #     required: true
 
 jobs:
   build:
@@ -50,7 +50,8 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.CR_PAT }}
+          # password: ${{ secrets.CR_PAT }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
 
   # validate_parameters:
