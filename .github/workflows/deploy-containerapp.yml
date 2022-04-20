@@ -18,20 +18,6 @@ on:
         required: true
         default: reddog-traefik
 
-      # app_container_version:
-      #   description: The version of the container image.
-      #   required: true
-
-      # deployment_github_ref:
-      #   description: Repository reference for the deployment to be attached to.
-      #   required: true
-
-      # No longer required
-      # app_type:
-      #   description: Azure application type.
-      #   required: true
-
-      # No longer required
       app_name:
         description: The name of the application.
         required: true
@@ -79,7 +65,6 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          # password: ${{ secrets.CR_PAT }}
           password: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Build and push
@@ -121,14 +106,18 @@ jobs:
   deploy:
       runs-on: ubuntu-latest
       needs: package-service
-      
+
+      steps:
+        - name: Checkout to the branch
+          uses: actions/checkout@v2
+              
       steps:
         - name: Azure Login
           uses: azure/login@v1
           with:
             creds: ${{ secrets.SENNAPARSA_AZURE_CREDENTIALS }}
 
-        - name: Add Container App Extension to Azue CLI
+        - name: Add Container App Extension to Azure CLI
           run: |
             echo "Installing containerapp extension"
             az extension add --name containerapp
@@ -163,8 +152,7 @@ jobs:
               --tags ref="${{ needs.set-env.outputs.version }}" \
                   repository="${{ github.repository }}"
           shell: bash
-
- # registry url should be ghcr.io/octodemo/reddog-containerapps/reddog-traefik:cb4041d
+ # registry url format  should be ghcr.io/octodemo/reddog-containerapps/reddog-traefik:cb4041d
 
         - name: Deploy infra and reddog apps
           id: deploy_infra
@@ -175,7 +163,6 @@ jobs:
               --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
               --template-file deploy/bicep/main.bicep
           shell: bash
-
 # az deployment group create -n reddog -g reddog -f ./deploy/bicep/main.bicep
 
         - name: Show outputs
@@ -187,6 +174,4 @@ jobs:
               --output json \
               --query properties.outputs.urls.value
           shell: bash
-
-
 # az deployment group show -n reddog -g reddog -o json --query properties.outputs.urls.value
