@@ -125,25 +125,25 @@ jobs:
                   repository="${{ github.repository }}"
           shell: bash
  
-        # - name: Create Container App
-        #   id: deploy_container_app
-        #   run: |
-        #     az containerapp create \
-        #       --name "${{ needs.validate_parameters.outputs.application_name }}" \
-        #       --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
-        #       --environment "${{ github.event.inputs.environment_name }}" \
-        #       --image ${{ needs.validate_parameters.outputs.validated_container_full_url }} \
-        #       --registry-server "${{ needs.validate_parameters.outputs.validated_container_registry_url }}" \
-        #       --registry-username "${{ needs.validate_parameters.outputs.validated_container_registry_username }}" \
-        #       --registry-password "${{ secrets.GITHUB_TOKEN }}" \
-        #       --cpu 0.25 \
-        #       --memory 0.5Gi \
-        #       --target-port 8080 \
-        #       --ingress 'external' \
-        #       --query properties.configuration.ingress.fqdn \
-        #       --tags ref="${{ github.event.inputs.deployment_github_ref }}" \
-        #           repository="${{ github.repository }}"
-        #   shell: bash
+        - name: Create Container App
+          id: deploy_container_app
+          run: |
+            az containerapp create \
+              --name "${{ needs.validate_parameters.outputs.application_name }}" \
+              --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
+              --environment "${{ github.event.inputs.environment_name }}" \
+              --image ${{ needs.set-env.outputs.image }} \
+              --registry-server "${{ github.event.inputs.container_registry }}" \
+              --registry-username "${{ github.actor }}" \
+              --registry-password "${{ secrets.GITHUB_TOKEN }}" \
+              --cpu 0.25 \
+              --memory 0.5Gi \
+              --target-port 8080 \
+              --ingress 'external' \
+              --query properties.configuration.ingress.fqdn \
+              --tags ref="${{ needs.set-env.outputs.version }}" \
+                  repository="${{ github.repository }}"
+          shell: bash
   
  
   # validate_parameters:
