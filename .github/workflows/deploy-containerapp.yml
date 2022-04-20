@@ -91,6 +91,31 @@ jobs:
             org.opencontainers.image.created=${{ needs.set-env.outputs.created }}
             org.opencontainers.image.revision=${{ needs.set-env.outputs.version }}
 
+  deploy:
+      runs-on: ubuntu-latest
+      needs: package-service
+      
+      steps:
+        - name: Azure Login
+          uses: azure/login@v1
+          with:
+            creds: ${{ SENNAPARSA_AZURE_CREDENTIALS }}
+
+
+        # - name: Deploy to containerapp
+        #   uses: azure/CLI@v1
+        #   with:
+        #     inlineScript: |
+        #       echo "Installing containerapp extension"
+        #       az config set extension.use_dynamic_install=yes_without_prompt
+        #       echo "Starting Deploying"
+        #       az containerapp registry set -n reddog-container-app -g reddog --server sennaparsa.azurecr.io --username  ${{ secrets.REDDOGCONTAINERAPP_REGISTRY_USERNAME }} --password ${{ secrets.REDDOGCONTAINERAPP_REGISTRY_PASSWORD }}
+        #       az containerapp update -n reddog-container-app -g reddog --image sennaparsa.azurecr.io/reddog-container-app:${{ github.sha }}
+ 
+ 
+ 
+ 
+ 
   # validate_parameters:
   #   name: Validate deployment parameters
   #   runs-on: ubuntu-20.04
