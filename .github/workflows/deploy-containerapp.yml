@@ -111,8 +111,10 @@ jobs:
               ;
             core.setOutput('container_full_url', `${repository}/${image}:${version}`);
       - name: Echo output
-        run: echo "${{ needs.set-env.outputs.container_full_url }}"
-        run: ls ../../
+        run: |
+          echo "${{ needs.set-env.outputs.container_full_url }}"
+          ls ../../
+        shell: bash
             
 
   deploy:
