@@ -96,17 +96,13 @@ jobs:
               ;
             core.setOutput('container_full_url', `${repository}/${image}:${version}`);
       - name: Echo output
-        run: |
-          echo "${{ needs.set-env.outputs.container_full_url }}"
-          # ls
-          # ls ../../reddog-containerapps
-        shell: bash
+        run: echo "${{ needs.set-env.outputs.container_full_url }}"
             
 
   deploy:
       runs-on: ubuntu-latest
       needs: package-service
-             
+
       steps:
         - name: Checkout to the branch
           uses: actions/checkout@v2
@@ -122,7 +118,7 @@ jobs:
             az extension add --name containerapp
             # https://github.com/microsoft/azure-container-apps/issues/109
             az provider register --namespace Microsoft.App
-            echo "Starting Deploying"
+            echo "Starting deployment"
           shell: bash
 
         - name: Create Container App Environment
@@ -156,7 +152,6 @@ jobs:
         - name: Deploy infra and reddog apps
           id: deploy_infra
           run: |
-            ls 
             az deployment group create \
               --name "${{ github.event.inputs.app_name }}" \
               --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
