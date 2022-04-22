@@ -99,6 +99,7 @@ jobs:
             const repository = process.env.container_repository
               , image = process.env.container_image
               , version = process.env.container_version
+              , container_full_url = process.env.container_full_url
               ;
             core.setOutput('container_full_url', `${repository}/${image}:${version}`);
             console.log("container_full_url = ", container_full_url);
