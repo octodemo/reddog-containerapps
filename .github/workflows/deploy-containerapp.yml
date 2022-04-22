@@ -46,7 +46,7 @@ jobs:
           echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
           echo ::set-output name=image::${{ github.event.inputs.app_container_image }}
           echo ::set-output name=repository::ghcr.io/octodemo/reddog-containerapps
-          echo ::set-output name=container_full_url::$(echo ${repository})/$(echo ${image}):$(echo ${version})
+          echo ::set-output name=container_full_url::${{ steps.main.outputs.repository }}/${{ steps.main.outputs.image }}:${{ steps.main.outputs.version }}
 
 
   package-service:
@@ -100,8 +100,7 @@ jobs:
               ;
             core.setOutput('container_full_url', `${repository}/${image}:${version}`);
       - name: Echo output
-        run: echo "${{ needs.set-env.outputs.container_full_url }}"
-            
+        run: echo "${{ needs.set-env.outputs.container_full_url }}"            
 
 #   deploy:
 #       runs-on: ubuntu-latest
