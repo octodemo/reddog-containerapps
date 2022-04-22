@@ -82,7 +82,7 @@ jobs:
             org.opencontainers.image.revision=${{ needs.set-env.outputs.version }}
      
 
-      - name: Check full Image URL
+      - name: Check full image URL
         run: echo ${{ needs.set-env.outputs.container_full_url }}
 
 
