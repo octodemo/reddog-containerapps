@@ -86,26 +86,8 @@ jobs:
             org.opencontainers.image.revision=${{ needs.set-env.outputs.version }}
      
 
-      - name: Update Output
-        id: updateoutput
-        uses: actions/github-script@v6
-        env:
-          container_image: ${{ needs.set-env.outputs.image }}
-          container_repository: ${{ needs.set-env.outputs.repository }}
-          container_version: ${{ needs.set-env.outputs.version }}
-          container_full_url: ${{ needs.set-env.outputs.container_full_url }}
-        with:
-          script: |
-            const repository = process.env.container_repository
-              , image = process.env.container_image
-              , version = process.env.container_version
-              , container_full_url = process.env.container_full_url
-              ;
-            core.setOutput('container_full_url', `${repository}/${image}:${version}`);
-            console.log("container_full_url = ", container_full_url);
-            console.log("${{ needs.package-service.updateoutput.container_full_url }} = ", ${{ needs.package-service.updateoutput.container_full_url }});
-
-        # run: echo ::set-output name=container_full_url::${{container_repository}}/${{container_image}}:${{container_version}} 
+      - name: Check Output
+        run: echo ${{ needs.set-env.outputs.repository }}/${{ needs.set-env.outputs.image }}:${{ needs.set-env.outputs.version }}
 
 
 #   deploy:
