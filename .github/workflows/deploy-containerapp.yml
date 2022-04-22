@@ -54,6 +54,9 @@ jobs:
     needs: set-env
     runs-on: ubuntu-latest
 
+    outputs:
+      container_full_url: ${{ steps.updateoutputs.outputs.container_full_url }}
+
     steps:
       - name: Checkout to the branch
         uses: actions/checkout@v2
@@ -86,6 +89,7 @@ jobs:
             
 
       - name: Update Output
+        id: updateoutput
         uses: actions/github-script@v6
         env:
           container_image: ${{ needs.set-env.outputs.image }}
@@ -100,7 +104,8 @@ jobs:
               ;
             core.setOutput('container_full_url', `${repository}/${image}:${version}`);
       - name: Echo output
-        run: echo "${{ needs.set-env.outputs.container_full_url }}"            
+        run: echo ::set-output name=container_full_url::${container_repository}/${container_image}:${container_version}
+            
 
 #   deploy:
 #       runs-on: ubuntu-latest
