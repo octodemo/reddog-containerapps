@@ -44,9 +44,10 @@ jobs:
         run: |
           echo ::set-output name=version::$(echo ${GITHUB_SHA} | cut -c1-7)
           echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
-          echo ::set-output name=image::reddog-traefik
+          echo ::set-output name=image::${{ github.event.inputs.app_container_image }}
           echo ::set-output name=repository::ghcr.io/octodemo/reddog-containerapps
           echo ::set-output name=container_full_url::$(echo ${repository})/$(echo ${image}):$(echo ${version})
+          
 
   package-service:
     name: Package Service
