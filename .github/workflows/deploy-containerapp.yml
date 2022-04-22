@@ -38,7 +38,7 @@ jobs:
       created: ${{ steps.main.outputs.created }}
       image: ${{ steps.main.outputs.image }}
       repository: ${{ steps.main.outputs.repository }}  
-      container_full_url: ${{ steps.main.outputs.container_full_url }}
+      container_full_url: ${{steps.main.outputs.repository}}/${{steps.main.outputs.image}}:${{steps.main.outputs.version}}
 
     steps:
       - id: main
@@ -47,7 +47,6 @@ jobs:
           echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
           echo ::set-output name=image::${{ github.event.inputs.app_container_image }}
           echo ::set-output name=repository::ghcr.io/octodemo/reddog-containerapps
-          echo ::set-output name=container_full_url::${repository}/${image}:${version}
 
   package-service:
     name: Package Service
@@ -84,76 +83,76 @@ jobs:
      
 
       - name: Check full Image URL
-        run: echo ${{ needs.set-env.outputs.repository }}/${{ needs.set-env.outputs.image }}:${{ needs.set-env.outputs.version }}
+        run: echo ${{ needs.set-env.outputs.container_full_url }}
 
 
-  deploy:
-      runs-on: ubuntu-latest
-      needs: package-service
+#   deploy:
+#       runs-on: ubuntu-latest
+#       needs: package-service
 
-      steps:
-        - name: Checkout to the branch
-          uses: actions/checkout@v2
+#       steps:
+#         - name: Checkout to the branch
+#           uses: actions/checkout@v2
 
-        - name: Azure Login
-          uses: azure/login@v1
-          with:
-            creds: ${{ secrets.SENNAPARSA_AZURE_CREDENTIALS }}
+#         - name: Azure Login
+#           uses: azure/login@v1
+#           with:
+#             creds: ${{ secrets.SENNAPARSA_AZURE_CREDENTIALS }}
 
-        - name: Add Container App Extension to Azure CLI
-          run: |
-            echo "Installing containerapp extension"
-            az extension add --name containerapp
-            # https://github.com/microsoft/azure-container-apps/issues/109
-            az provider register --namespace Microsoft.App
-            echo "Starting deployment"
-          shell: bash
+#         - name: Add Container App Extension to Azure CLI
+#           run: |
+#             echo "Installing containerapp extension"
+#             az extension add --name containerapp
+#             # https://github.com/microsoft/azure-container-apps/issues/109
+#             az provider register --namespace Microsoft.App
+#             echo "Starting deployment"
+#           shell: bash
 
-        - name: Create Container App Environment
-          env:
-            LOCATION: eastus2 # hardcoded for now but can be passed inas secret or discovered, not required by default, but useful as resource group is location aware
-          run: |
-            az containerapp env create \
-              --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
-              --name "${{ github.event.inputs.environment_name }}" \
-              --location "$LOCATION" \
-              --tags ref="${{ needs.set-env.outputs.version }}" \
-                  repository="${{ github.repository }}"
-          shell: bash
+#         - name: Create Container App Environment
+#           env:
+#             LOCATION: eastus2 # hardcoded for now but can be passed inas secret or discovered, not required by default, but useful as resource group is location aware
+#           run: |
+#             az containerapp env create \
+#               --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
+#               --name "${{ github.event.inputs.environment_name }}" \
+#               --location "$LOCATION" \
+#               --tags ref="${{ needs.set-env.outputs.version }}" \
+#                   repository="${{ github.repository }}"
+#           shell: bash
  
-        - name: Create Container App
-          id: create_container_app
-          run: |
-            az containerapp create \
-              --name "${{ github.event.inputs.app_name }}" \
-              --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
-              --environment "${{ github.event.inputs.environment_name }}" \
-              --image ghcr.io/octodemo/reddog-containerapps/reddog-traefik:${{ needs.set-env.outputs.version }} \
-              --registry-server "${{ github.event.inputs.container_registry }}" \
-              --registry-username "${{ github.actor }}" \
-              --registry-password "${{ secrets.GITHUB_TOKEN }}" \
-              --tags ref="${{ needs.set-env.outputs.version }}" \
-                  repository="${{ github.repository }}"
-          shell: bash
- # registry url format  should be ghcr.io/octodemo/reddog-containerapps/reddog-traefik:cb4041d
+#         - name: Create Container App
+#           id: create_container_app
+#           run: |
+#             az containerapp create \
+#               --name "${{ github.event.inputs.app_name }}" \
+#               --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
+#               --environment "${{ github.event.inputs.environment_name }}" \
+#               --image ghcr.io/octodemo/reddog-containerapps/reddog-traefik:${{ needs.set-env.outputs.version }} \
+#               --registry-server "${{ github.event.inputs.container_registry }}" \
+#               --registry-username "${{ github.actor }}" \
+#               --registry-password "${{ secrets.GITHUB_TOKEN }}" \
+#               --tags ref="${{ needs.set-env.outputs.version }}" \
+#                   repository="${{ github.repository }}"
+#           shell: bash
+#  # registry url format  should be ghcr.io/octodemo/reddog-containerapps/reddog-traefik:cb4041d
 
-        - name: Deploy infra and reddog apps
-          id: deploy_infra
-          run: |
-            az deployment group create \
-              --name "${{ github.event.inputs.app_name }}" \
-              --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
-              --template-file deploy/bicep/main.bicep
-          shell: bash
-# az deployment group create -n reddog -g reddog -f ./deploy/bicep/main.bicep
+#         - name: Deploy infra and reddog apps
+#           id: deploy_infra
+#           run: |
+#             az deployment group create \
+#               --name "${{ github.event.inputs.app_name }}" \
+#               --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
+#               --template-file deploy/bicep/main.bicep
+#           shell: bash
+# # az deployment group create -n reddog -g reddog -f ./deploy/bicep/main.bicep
 
-        - name: Show outputs
-          id: show_outputs
-          run: |
-            az deployment group show \
-              --name "${{ github.event.inputs.app_name }}" \
-              --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
-              --output json \
-              --query properties.outputs.urls.value
-          shell: bash
-# az deployment group show -n reddog -g reddog -o json --query properties.outputs.urls.value
+#         - name: Show outputs
+#           id: show_outputs
+#           run: |
+#             az deployment group show \
+#               --name "${{ github.event.inputs.app_name }}" \
+#               --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
+#               --output json \
+#               --query properties.outputs.urls.value
+#           shell: bash
+# # az deployment group show -n reddog -g reddog -o json --query properties.outputs.urls.value
