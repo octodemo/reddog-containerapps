@@ -94,17 +94,16 @@ jobs:
           container_repository: ${{ needs.set-env.outputs.repository }}
           container_version: ${{ needs.set-env.outputs.version }}
           container_full_url: ${{ needs.set-env.outputs.container_full_url }}
-        with:
-          script: |
-            const repository = process.env.container_repository
-              , image = process.env.container_image
-              , version = process.env.container_version
-              ;
-            core.setOutput('container_full_url', `${repository}/${image}:${version}`);
-            console.log("container_full_url = ", container_full_url);
-      - name: Echo output
+        # with:
+        #   script: |
+        #     const repository = process.env.container_repository
+        #       , image = process.env.container_image
+        #       , version = process.env.container_version
+        #       ;
+        #     core.setOutput('container_full_url', `${repository}/${image}:${version}`);
+        #     console.log("container_full_url = ", container_full_url);
         run: echo ::set-output name=container_full_url::${{container_repository}}/${{container_image}}:${{container_version}} 
-            
+
 
 #   deploy:
 #       runs-on: ubuntu-latest
