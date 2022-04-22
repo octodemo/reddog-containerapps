@@ -93,7 +93,7 @@ jobs:
           container_image: ${{ needs.set-env.outputs.image }}
           container_repository: ${{ needs.set-env.outputs.repository }}
           container_version: ${{ needs.set-env.outputs.version }}
-          # container_full_url: ${{ needs.set-env.outputs.container_full_url }}
+          container_full_url: ${{ needs.set-env.outputs.container_full_url }}
         with:
           script: |
             const repository = process.env.container_repository
