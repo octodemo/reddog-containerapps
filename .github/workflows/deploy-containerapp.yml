@@ -103,6 +103,8 @@ jobs:
               ;
             core.setOutput('container_full_url', `${repository}/${image}:${version}`);
             console.log("container_full_url = ", container_full_url);
+            console.log("${{ needs.package-service.updateoutput.container_full_url }} = ", ${{ needs.package-service.updateoutput.container_full_url }});
+
         # run: echo ::set-output name=container_full_url::${{container_repository}}/${{container_image}}:${{container_version}} 
 
 
