@@ -56,7 +56,7 @@ jobs:
           echo ::set-output name=container_full_url::${{ steps.main.outputs.repository }}/${{ steps.main.outputs.image }}:${{ steps.main.outputs.version }}
 
       - name: Update Output
-      - id: updateoutput
+        id: updateoutput
         uses: actions/github-script@v6
         env:
           container_full_url: ${{ needs.set-env.outputs.container_full_url }}
