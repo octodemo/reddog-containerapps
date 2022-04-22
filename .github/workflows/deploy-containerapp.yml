@@ -127,7 +127,7 @@ jobs:
               --name "${{ github.event.inputs.app_name }}" \
               --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
               --environment "${{ github.event.inputs.environment_name }}" \
-              --image ${{ needs.set-env.outputs.container_full_url }} \
+              --image "${{ needs.set-env.outputs.container_full_url }}" \
               --registry-server "${{ github.event.inputs.container_registry }}" \
               --registry-username "${{ github.actor }}" \
               --registry-password "${{ secrets.GITHUB_TOKEN }}" \
