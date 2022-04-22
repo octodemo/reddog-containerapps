@@ -94,7 +94,7 @@ jobs:
               , image = process.env.container_image
               , version = process.env.container_version
               ;
-            core.setOutput('container_full_url', `${repository}/${image}:${version}`);
+          # core.setOutput('container_full_url', `${repository}/${image}:${version}`);
       - name: Echo output
         run: echo "${{ needs.set-env.outputs.container_full_url }}"
             
