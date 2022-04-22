@@ -88,7 +88,7 @@ jobs:
 
       - name: Update Output
         id: updateoutput
-        uses: actions/github-script@v6
+        # uses: actions/github-script@v6
         env:
           container_image: ${{ needs.set-env.outputs.image }}
           container_repository: ${{ needs.set-env.outputs.repository }}
