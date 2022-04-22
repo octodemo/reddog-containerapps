@@ -39,13 +39,7 @@ jobs:
       image: ${{ steps.main.outputs.image }}
       repository: ${{ steps.main.outputs.repository }}  
       container_full_url: ${{ steps.main.outputs.container_full_url }}
-    with:
-      script: |
-        const repository = process.env.container_repository
-          , image = process.env.container_image
-          , version = process.env.container_version
-          ;
-        core.setOutput('container_full_url', `${repository}/${image}:${version}`);
+
     steps:
       - id: main
         run: |
