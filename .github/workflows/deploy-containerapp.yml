@@ -47,7 +47,7 @@ jobs:
           echo ::set-output name=image::${{ github.event.inputs.app_container_image }}
           echo ::set-output name=repository::ghcr.io/octodemo/reddog-containerapps
           echo ::set-output name=container_full_url::$(echo ${repository})/$(echo ${image}):$(echo ${version})
-          
+
 
   package-service:
     name: Package Service
@@ -81,6 +81,9 @@ jobs:
             org.opencontainers.image.source=${{ github.repositoryUrl }}
             org.opencontainers.image.created=${{ needs.set-env.outputs.created }}
             org.opencontainers.image.revision=${{ needs.set-env.outputs.version }}
+              - name: Echo output
+        run: echo post build container url is ${{ needs.set-env.outputs.container_full_url }}
+            
 
       - name: Update Output
         uses: actions/github-script@v6
@@ -95,7 +98,7 @@ jobs:
               , image = process.env.container_image
               , version = process.env.container_version
               ;
-          # core.setOutput('container_full_url', `${repository}/${image}:${version}`);
+            core.setOutput('container_full_url', `${repository}/${image}:${version}`);
       - name: Echo output
         run: echo "${{ needs.set-env.outputs.container_full_url }}"
             
