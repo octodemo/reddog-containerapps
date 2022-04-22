@@ -84,9 +84,7 @@ jobs:
             org.opencontainers.image.source=${{ github.repositoryUrl }}
             org.opencontainers.image.created=${{ needs.set-env.outputs.created }}
             org.opencontainers.image.revision=${{ needs.set-env.outputs.version }}
-      - name: Echo output
-        run: echo post build container url is ${{ needs.set-env.outputs.container_full_url }}
-            
+     
 
       - name: Update Output
         id: updateoutput
@@ -103,8 +101,9 @@ jobs:
               , version = process.env.container_version
               ;
             core.setOutput('container_full_url', `${repository}/${image}:${version}`);
+            console.log("container_full_url = ", container_full_url);
       - name: Echo output
-        run: echo ::set-output name=container_full_url::${container_repository}/${container_image}:${container_version}
+        run: echo ::set-output name=container_full_url::${{container_repository}}/${{container_image}}:${{container_version}} 
             
 
 #   deploy:
