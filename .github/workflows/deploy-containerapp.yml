@@ -89,7 +89,8 @@ jobs:
   deploy:
       runs-on: ubuntu-latest
       needs: package-service
-
+      environment: prod
+      # url: TODO
       steps:
         - name: Checkout to the branch
           uses: actions/checkout@v2
@@ -156,3 +157,15 @@ jobs:
               --query properties.outputs.urls.value
           shell: bash
 # az deployment group show -n reddog -g reddog -o json --query properties.outputs.urls.value
+
+
+# TODO:  grab the UI output
+    # "outputs": ***
+    #   "urls": ***
+    #     "type": "Array",
+    #     "value": [
+    #       "UI: https://reddog.yellowcoast-15f95dbb.eastus2.azurecontainerapps.io",
+    #       "Product: https://reddog.yellowcoast-15f95dbb.eastus2.azurecontainerapps.io/product",
+    #       "Makeline Orders (Redmond): https://reddog.yellowcoast-15f95dbb.eastus2.azurecontainerapps.io/makeline/orders/Redmond",
+    #       "Accounting Order Metrics (Redmond): https://reddog.yellowcoast-15f95dbb.eastus2.azurecontainerapps.io/accounting/OrderMetrics?StoreId=Redmond"
+    #     ]
