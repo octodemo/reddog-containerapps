@@ -93,8 +93,9 @@ jobs:
         # frontend_url: ${{ steps.show_outputs.outputs.frontend_url }}
         env_url: ${{ steps.show_env_outputs.outputs.env_outputs }}
         
-      environment: prod
-      url: ${{ steps.show_env_outputs.outputs.env_outputs }}      
+      environment: 
+        name: prod
+        url: ${{ steps.show_env_outputs.outputs.env_outputs }}
 
 
       steps:
