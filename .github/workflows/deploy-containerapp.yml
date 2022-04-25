@@ -94,7 +94,7 @@ jobs:
         env_url: ${{ steps.show_env_outputs.outputs.env_outputs }}
         
       environment: prod
-      # url: ${{ steps.show_outputs.outputs.frontend_url }}      
+      url: ${{ steps.show_env_outputs.outputs.env_outputs }}      
 
 
       steps:
@@ -136,9 +136,10 @@ jobs:
               --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
               --output json \
               --query properties.defaultDomain 
+            echo ::set-output name=env_outputs::${properties.defaultDomain}
           shell: bash
 
-                      # echo ::set-output name=env_outputs::${properties.outputs}
+                      # 
 
  
         # - name: Create Container App
