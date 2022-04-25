@@ -137,12 +137,9 @@ jobs:
               --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
               --output json \
               --query properties.defaultDomain`
-            echo ::set-output name=env_outputs::$env_url
+            echo "::set-output name=env_outputs::$env_url"
           shell: bash
 
-                      # 
-
- 
         # - name: Create Container App
         #   id: create_container_app
         #   run: |
