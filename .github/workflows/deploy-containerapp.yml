@@ -80,23 +80,17 @@ jobs:
             org.opencontainers.image.source=${{ github.repositoryUrl }}
             org.opencontainers.image.created=${{ needs.set-env.outputs.created }}
             org.opencontainers.image.revision=${{ needs.set-env.outputs.version }}
-     
 
       - name: Check full image URL
         run: echo ${{ needs.set-env.outputs.container_full_url }}
 
-
   deploy:
       runs-on: ubuntu-latest
       needs: package-service
-      # outputs: 
-      #   # frontend_url: ${{ steps.show_outputs.outputs.frontend_url }}
-      #   env_url: ${{ steps.show_env_outputs.outputs.env_outputs }}
-        
+
       environment: 
         name: prod
-        url: ${{ steps.show_env_outputs.outputs.env_outputs }}
-
+        url: ${{ steps.show_outputs.outputs.web_ui }}
 
       steps:
         - name: Checkout to the branch
@@ -129,53 +123,42 @@ jobs:
                   repository="${{ github.repository }}"
           shell: bash
 
-        - name: Show env outputs
-          id: show_env_outputs
+        - name: Create Container App
+          id: create_container_app
           run: |
-            env_url=`az containerapp env show \
-              --name "${{ github.event.inputs.environment_name }}" \
+            az containerapp create \
+              --name "${{ github.event.inputs.app_name }}" \
               --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
-              --output json \
-              --query properties.defaultDomain`
-            echo "::set-output name=env_outputs::$env_url"
+              --environment "${{ github.event.inputs.environment_name }}" \
+              --image "${{ needs.set-env.outputs.container_full_url }}" \
+              --registry-server "${{ github.event.inputs.container_registry }}" \
+              --registry-username "${{ github.actor }}" \
+              --registry-password "${{ secrets.GITHUB_TOKEN }}" \
+              --tags ref="${{ needs.set-env.outputs.version }}" \
+                  repository="${{ github.repository }}"
           shell: bash
-
-        # - name: Create Container App
-        #   id: create_container_app
-        #   run: |
-        #     az containerapp create \
-        #       --name "${{ github.event.inputs.app_name }}" \
-        #       --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
-        #       --environment "${{ github.event.inputs.environment_name }}" \
-        #       --image "${{ needs.set-env.outputs.container_full_url }}" \
-        #       --registry-server "${{ github.event.inputs.container_registry }}" \
-        #       --registry-username "${{ github.actor }}" \
-        #       --registry-password "${{ secrets.GITHUB_TOKEN }}" \
-        #       --tags ref="${{ needs.set-env.outputs.version }}" \
-        #           repository="${{ github.repository }}"
-        #   shell: bash
  # registry url format  should be ghcr.io/octodemo/reddog-containerapps/reddog-traefik:cb4041d
 
-        # - name: Deploy infra and reddog apps
-        #   id: deploy_infra
-        #   run: |
-        #     az deployment group create \
-        #       --name "${{ github.event.inputs.app_name }}" \
-        #       --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
-        #       --template-file deploy/bicep/main.bicep
-        #   shell: bash
+        - name: Deploy infra and reddog apps
+          id: deploy_infra
+          run: |
+            az deployment group create \
+              --name "${{ github.event.inputs.app_name }}" \
+              --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
+              --template-file deploy/bicep/main.bicep
+          shell: bash
 # az deployment group create -n reddog -g reddog -f ./deploy/bicep/main.bicep
 
-        # - name: Show outputs
-        #   id: show_outputs
-        #   run: |
-        #     az deployment group show \
-        #       --name "${{ github.event.inputs.app_name }}" \
-        #       --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
-        #       --output json \
-        #       --query properties.outputs.urls.value
-        #     echo ::set-output name=frontend_url::${properties.outputs.urls.value.UI}
-        #   shell: bash
+        - name: Show outputs
+          id: show_outputs
+          run: |
+            web_url=`az deployment group show \
+              --name "${{ github.event.inputs.app_name }}" \
+              --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
+              --output json \
+              --query properties.outputs.urls.value.UI`
+            echo "::set-output name=web_ui::$web_url"
+          shell: bash
 
 # az deployment group show -n reddog -g reddog -o json --query properties.outputs.urls.value
 
