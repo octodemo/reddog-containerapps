@@ -132,12 +132,12 @@ jobs:
         - name: Show env outputs
           id: show_env_outputs
           run: |
-            az containerapp env show \
+            env_url =`az containerapp env show \
               --name "${{ github.event.inputs.environment_name }}" \
               --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
               --output json \
-              --query properties.defaultDomain 
-            echo ::set-output name=env_outputs::${properties.defaultDomain}
+              --query properties.defaultDomain`
+            echo ::set-output name=env_outputs::$env_url
           shell: bash
 
                       # 
