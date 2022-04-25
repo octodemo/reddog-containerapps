@@ -132,7 +132,7 @@ jobs:
         - name: Show env outputs
           id: show_env_outputs
           run: |
-            env_url =`az containerapp env show \
+            env_url=`az containerapp env show \
               --name "${{ github.event.inputs.environment_name }}" \
               --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
               --output json \
