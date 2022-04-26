@@ -152,6 +152,11 @@ jobs:
         - name: Show outputs
           id: show_outputs
           run: |
+            az deployment group show \
+                --name "${{ github.event.inputs.app_name }}" \
+                --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
+                --output json \
+                --query properties.outputs.urls.value.UI
             web_url=`az deployment group show \
               --name "${{ github.event.inputs.app_name }}" \
               --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
