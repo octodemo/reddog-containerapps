@@ -145,7 +145,9 @@ jobs:
             az deployment group create \
               --name "${{ github.event.inputs.app_name }}" \
               --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
-              --template-file deploy/bicep/main.bicep 
+              --template-file deploy/bicep/main.bicep \ 
+              --output json \
+              --query properties.outputs.urls.value
           shell: bash
 # az deployment group create -n reddog -g reddog -f ./deploy/bicep/main.bicep
 
@@ -153,10 +155,10 @@ jobs:
           id: show_outputs
           run: |
             az deployment group show \
-                --name "${{ github.event.inputs.app_name }}" \
-                --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
-                --output json \
-                --query properties.outputs.urls.value.UI
+              --name "${{ github.event.inputs.app_name }}" \
+              --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
+              --output json \
+              --query properties.outputs.urls.value
           shell: bash
 
 # az deployment group show -n reddog -g reddog -o json --query properties.outputs.urls.value
