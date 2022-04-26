@@ -157,19 +157,12 @@ jobs:
               --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
               --output json \
               --query properties.outputs.urls.value[0]`
-              echo "::set-output name=web_ui::${web_url#*}"
+              echo "::set-output name=web_ui::${web_url#* }"
           shell: bash
 
 # az deployment group show -n reddog -g reddog -o json --query properties.outputs.urls.value
 
-            # web_url=`az deployment group show \
-            #   --name "${{ github.event.inputs.app_name }}" \
-            #   --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
-            #   --output json \
-            #   --query properties.outputs.urls.value.UI`
-            # echo "::set-output name=web_ui::$web_url"
-
-# TODO:  grab the UI output
+# grab the UI output from: 
     # "outputs": ***
     #   "urls": ***
     #     "type": "Array",
