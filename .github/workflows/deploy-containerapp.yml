@@ -157,7 +157,7 @@ jobs:
               --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
               --output json \
               --query properties.outputs.urls.value[0]`
-              echo "::set-output name=web_ui::${web_url#* }"
+              echo "::set-output name=web_ui::$${web_url:3:-1}"
           shell: bash
 
 # az deployment group show -n reddog -g reddog -o json --query properties.outputs.urls.value
