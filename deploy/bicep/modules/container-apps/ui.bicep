@@ -26,7 +26,7 @@ resource ui 'Microsoft.App/containerApps@2022-01-01-preview' = {
             }
             {
               name: 'VUE_APP_SITE_TYPE'
-              value: 'Pharmacy'
+              value: 'Pharmcay'
             }
             {
               name: 'VUE_APP_SITE_TITLE'
